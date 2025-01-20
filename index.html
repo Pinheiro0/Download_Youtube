@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download de Vídeo YouTube</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Download de Vídeo YouTube</h1>
+        <form method="POST" action="/">
+            <div class="mb-3">
+                <label for="video_url" class="form-label">Cole a URL do vídeo:</label>
+                <input type="text" class="form-control" id="video_url" name="video_url" placeholder="Cole a URL do vídeo" required>
+            </div>
+            <div class="mb-3">
+                <label for="download_type" class="form-label">Escolha o tipo de download:</label>
+                <select class="form-select" id="download_type" name="download_type">
+                    <option value="video">Vídeo</option>
+                    <option value="audio">Áudio</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Exibir Detalhes</button>
+        </form>
+
+        {% if title %}
+            <div class="mt-4">
+                <h3>Detalhes do Vídeo:</h3>
+                <p><strong>Título:</strong> {{ title }}</p>
+                <img src="{{ thumbnail_url }}" alt="Thumbnail" class="img-fluid" style="max-width: 300px;">
+                <form method="POST" action="/">
+                    <input type="hidden" name="video_url" value="{{ request.form['video_url'] }}">
+                    <input type="hidden" name="download_type" value="{{ request.form['download_type'] }}">
+                    <button type="submit" name="confirm_download" class="btn btn-success mt-3">Iniciar Download</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if message %}
+            <div class="alert alert-info mt-3">
+                {{ message }}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
