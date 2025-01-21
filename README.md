@@ -45,12 +45,12 @@ Este projeto é um aplicativo web simples para baixar vídeos do YouTube, desenv
 ## Estrutura do Projeto
 
 ```
-.
+YT_Download
 ├── app.py                 # Código principal do aplicativo Flask
 ├── templates
 │   └── index.html         # Interface do usuário
-├── downloads              # Pasta onde os vídeos baixados serão salvos
 ├── requirements.txt       # Lista de dependências do projeto
+├── downloads              # Pasta onde os vídeos baixados serão salvos (será criada automaticamente)
 └── README.md              # Documentação do projeto
 ```
 
@@ -65,7 +65,7 @@ yt-dlp
 
 ## Observações
 
-1. Certifique-se de que a pasta `downloads` existe ou será criada automaticamente no mesmo diretório onde o script é executado.
+1. A pasta `downloads` será criada automaticamente no mesmo diretório onde o script é executado, caso ainda não exista.
 2. Este projeto é apenas para uso educacional. Use-o com responsabilidade e de acordo com as políticas do YouTube.
 
 ## Autor
@@ -75,5 +75,4 @@ Desenvolvido por Gustavo Pinheiro.
 ## Licença
 
 Este projeto é distribuído sob a licença MIT. Veja o arquivo LICENSE para mais informações.
-
 
