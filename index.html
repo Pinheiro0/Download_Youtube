@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Define o charset e a responsividade -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Video Downloader</title>
-
-    <!-- Importa a fonte Roboto do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Estilos CSS para o layout da página -->
     <style>
-        /* Configurações básicas do corpo */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f4f4f9;
@@ -24,7 +18,6 @@
             min-height: 100vh;
         }
 
-        /* Estilo do contêiner principal */
         .container {
             max-width: 600px;
             width: 100%;
@@ -35,7 +28,6 @@
             text-align: center;
         }
 
-        /* Título principal */
         h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -43,14 +35,12 @@
             margin-bottom: 10px;
         }
 
-        /* Parágrafos */
         p {
             font-size: 1rem;
             color: #666666;
             margin-bottom: 20px;
         }
 
-        /* Input de texto */
         input[type="text"] {
             width: 100%;
             padding: 12px;
@@ -61,7 +51,6 @@
             color: #333333;
         }
 
-        /* Botão de enviar */
         button {
             padding: 12px 20px;
             font-size: 1rem;
@@ -78,7 +67,6 @@
             background-color: #45a045;
         }
 
-        /* Seção de detalhes do vídeo */
         .video-details {
             margin-top: 20px;
             text-align: center;
@@ -91,7 +79,6 @@
             border-radius: 10px;
         }
 
-        /* Barra de progresso */
         .progress-bar {
             margin-top: 20px;
             width: 100%;
@@ -112,7 +99,6 @@
             font-size: 0.85rem;
         }
 
-        /* Rodapé */
         footer {
             margin-top: 30px;
             font-size: 0.9rem;
@@ -130,63 +116,53 @@
     </style>
 </head>
 <body>
-    <!-- Contêiner principal -->
     <div class="container">
         <h1>YouTube Video Downloader</h1>
         <p>Insira a URL do vídeo do YouTube para obter informações e baixar:</p>
-
-        <!-- Formulário para inserir URL -->
         <form id="yt-form">
             <input type="text" id="youtube-url" placeholder="Cole aqui sua URL..." required>
             <button type="submit">Buscar Vídeo</button>
         </form>
 
-        <!-- Detalhes do vídeo -->
         <div class="video-details" id="video-details" style="display: none;">
             <h2 id="video-title"></h2>
             <img id="video-thumbnail" alt="Thumbnail do vídeo">
             <button id="download-button">Baixar Vídeo</button>
         </div>
 
-        <!-- Barra de progresso -->
         <div class="progress-bar" id="progress-bar" style="display: none;">
             <div></div>
         </div>
     </div>
 
-    <!-- Rodapé com link para o GitHub -->
     <footer>
         Desenvolvido por <a href="https://github.com">Gustavo Pinheiro</a>
     </footer>
 
-    <!-- Script para funcionalidade da página -->
     <script>
-        // Lida com o envio do formulário
         document.getElementById('yt-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Evita o comportamento padrão do formulário
+            event.preventDefault();
 
-            const url = document.getElementById('youtube-url').value; // Obtém a URL inserida
+            const url = document.getElementById('youtube-url').value;
 
-            // Regex para validar URLs do YouTube
             const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
             if (!youtubeRegex.test(url)) {
                 alert('Por favor, insira uma URL válida do YouTube.');
                 return;
             }
 
-            // Reseta a interface antes de iniciar a busca
+            // Resetar o estado da interface antes de realizar a busca
             const videoDetailsDiv = document.getElementById('video-details');
             const progressBar = document.getElementById('progress-bar');
             const progressBarFill = progressBar.querySelector('div');
-            videoDetailsDiv.style.display = 'none'; // Esconde os detalhes do vídeo
-            progressBar.style.display = 'none';     // Esconde a barra de progresso
-            progressBarFill.style.width = '0%';    // Reseta o progresso para 0%
-            progressBarFill.textContent = '';      // Limpa o texto de progresso
-            document.getElementById('video-title').innerText = ''; // Limpa o título
-            document.getElementById('video-thumbnail').src = '';   // Limpa a thumbnail
+            videoDetailsDiv.style.display = 'none'; // Esconder detalhes do vídeo
+            progressBar.style.display = 'none';     // Esconder barra de progresso
+            progressBarFill.style.width = '0%';    // Resetar progresso para 0%
+            progressBarFill.textContent = '';      // Limpar texto de progresso
+            document.getElementById('video-title').innerText = ''; // Limpar título
+            document.getElementById('video-thumbnail').src = '';   // Limpar thumbnail
 
             try {
-                // Faz a requisição ao backend para buscar detalhes do vídeo
                 const response = await fetch('/get_video_details', {
                     method: 'POST',
                     headers: {
@@ -195,15 +171,13 @@
                     body: JSON.stringify({ url })
                 });
 
-                const data = await response.json(); // Converte a resposta para JSON
+                const data = await response.json();
 
                 if (data.success) {
-                    // Exibe os detalhes do vídeo na interface
                     document.getElementById('video-title').innerText = data.title;
                     document.getElementById('video-thumbnail').src = data.thumbnail_url;
                     videoDetailsDiv.style.display = 'block';
 
-                    // Configura o evento de clique no botão de download
                     document.getElementById('download-button').onclick = async function() {
                         progressBar.style.display = 'block';
 
@@ -218,21 +192,19 @@
                         const downloadData = await downloadResponse.json();
 
                         if (downloadData.success) {
-                            // Atualiza a barra de progresso em caso de sucesso
                             progressBarFill.style.width = '100%';
                             progressBarFill.textContent = 'Download concluído!';
                         } else {
-                            // Exibe uma mensagem de erro caso falhe
                             progressBarFill.style.width = '0%';
                             progressBarFill.textContent = '';
                             alert('Erro ao fazer o download do vídeo: ' + downloadData.error);
                         }
                     };
                 } else {
-                    alert('Erro: ' + data.error); // Exibe o erro retornado pelo backend
+                    alert('Erro: ' + data.error);
                 }
             } catch (error) {
-                alert('Erro ao se conectar ao servidor: ' + error.message); // Exibe erros de conexão
+                alert('Erro ao se conectar ao servidor: ' + error.message);
             }
         });
     </script>
