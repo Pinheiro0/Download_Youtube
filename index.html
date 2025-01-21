@@ -1,47 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Define o charset e a responsividade -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download de Vídeo YouTube</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>YouTube Video Downloader</title>
+
+    <!-- Importa a fonte Roboto do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Estilos CSS para o layout da página -->
+    <style>
+        /* Configurações básicas do corpo */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Estilo do contêiner principal */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        /* Título principal */
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+        /* Parágrafos */
+        p {
+            font-size: 1rem;
+            color: #666666;
+            margin-bottom: 20px;
+        }
+
+        /* Input de texto */
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #333333;
+        }
+
+        /* Botão de enviar */
+        button {
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: #4caf50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a045;
+        }
+
+        /* Seção de detalhes do vídeo */
+        .video-details {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .video-details img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        /* Barra de progresso */
+        .progress-bar {
+            margin-top: 20px;
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #cccccc;
+        }
+
+        .progress-bar div {
+            height: 100%;
+            width: 0%;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 20px;
+            color: #ffffff;
+            font-size: 0.85rem;
+        }
+
+        /* Rodapé */
+        footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #888888;
+        }
+
+        footer a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Download de Vídeo YouTube</h1>
-        <form method="POST" action="/">
-            <div class="mb-3">
-                <label for="video_url" class="form-label">Cole a URL do vídeo:</label>
-                <input type="text" class="form-control" id="video_url" name="video_url" placeholder="Cole a URL do vídeo" required>
-            </div>
-            <div class="mb-3">
-                <label for="download_type" class="form-label">Escolha o tipo de download:</label>
-                <select class="form-select" id="download_type" name="download_type">
-                    <option value="video">Vídeo</option>
-                    <option value="audio">Áudio</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Exibir Detalhes</button>
+    <!-- Contêiner principal -->
+    <div class="container">
+        <h1>YouTube Video Downloader</h1>
+        <p>Insira a URL do vídeo do YouTube para obter informações e baixar:</p>
+
+        <!-- Formulário para inserir URL -->
+        <form id="yt-form">
+            <input type="text" id="youtube-url" placeholder="Cole aqui sua URL..." required>
+            <button type="submit">Buscar Vídeo</button>
         </form>
 
-        {% if title %}
-            <div class="mt-4">
-                <h3>Detalhes do Vídeo:</h3>
-                <p><strong>Título:</strong> {{ title }}</p>
-                <img src="{{ thumbnail_url }}" alt="Thumbnail" class="img-fluid" style="max-width: 300px;">
-                <form method="POST" action="/">
-                    <input type="hidden" name="video_url" value="{{ request.form['video_url'] }}">
-                    <input type="hidden" name="download_type" value="{{ request.form['download_type'] }}">
-                    <button type="submit" name="confirm_download" class="btn btn-success mt-3">Iniciar Download</button>
-                </form>
-            </div>
-        {% endif %}
+        <!-- Detalhes do vídeo -->
+        <div class="video-details" id="video-details" style="display: none;">
+            <h2 id="video-title"></h2>
+            <img id="video-thumbnail" alt="Thumbnail do vídeo">
+            <button id="download-button">Baixar Vídeo</button>
+        </div>
 
-        {% if message %}
-            <div class="alert alert-info mt-3">
-                {{ message }}
-            </div>
-        {% endif %}
+        <!-- Barra de progresso -->
+        <div class="progress-bar" id="progress-bar" style="display: none;">
+            <div></div>
+        </div>
     </div>
+
+    <!-- Rodapé com link para o GitHub -->
+    <footer>
+        Desenvolvido por <a href="https://github.com">Gustavo Pinheiro</a>
+    </footer>
+
+    <!-- Script para funcionalidade da página -->
+    <script>
+        // Lida com o envio do formulário
+        document.getElementById('yt-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Evita o comportamento padrão do formulário
+
+            const url = document.getElementById('youtube-url').value; // Obtém a URL inserida
+
+            // Regex para validar URLs do YouTube
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+            if (!youtubeRegex.test(url)) {
+                alert('Por favor, insira uma URL válida do YouTube.');
+                return;
+            }
+
+            // Reseta a interface antes de iniciar a busca
+            const videoDetailsDiv = document.getElementById('video-details');
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarFill = progressBar.querySelector('div');
+            videoDetailsDiv.style.display = 'none'; // Esconde os detalhes do vídeo
+            progressBar.style.display = 'none';     // Esconde a barra de progresso
+            progressBarFill.style.width = '0%';    // Reseta o progresso para 0%
+            progressBarFill.textContent = '';      // Limpa o texto de progresso
+            document.getElementById('video-title').innerText = ''; // Limpa o título
+            document.getElementById('video-thumbnail').src = '';   // Limpa a thumbnail
+
+            try {
+                // Faz a requisição ao backend para buscar detalhes do vídeo
+                const response = await fetch('/get_video_details', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json(); // Converte a resposta para JSON
+
+                if (data.success) {
+                    // Exibe os detalhes do vídeo na interface
+                    document.getElementById('video-title').innerText = data.title;
+                    document.getElementById('video-thumbnail').src = data.thumbnail_url;
+                    videoDetailsDiv.style.display = 'block';
+
+                    // Configura o evento de clique no botão de download
+                    document.getElementById('download-button').onclick = async function() {
+                        progressBar.style.display = 'block';
+
+                        const downloadResponse = await fetch('/download_video', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ url })
+                        });
+
+                        const downloadData = await downloadResponse.json();
+
+                        if (downloadData.success) {
+                            // Atualiza a barra de progresso em caso de sucesso
+                            progressBarFill.style.width = '100%';
+                            progressBarFill.textContent = 'Download concluído!';
+                        } else {
+                            // Exibe uma mensagem de erro caso falhe
+                            progressBarFill.style.width = '0%';
+                            progressBarFill.textContent = '';
+                            alert('Erro ao fazer o download do vídeo: ' + downloadData.error);
+                        }
+                    };
+                } else {
+                    alert('Erro: ' + data.error); // Exibe o erro retornado pelo backend
+                }
+            } catch (error) {
+                alert('Erro ao se conectar ao servidor: ' + error.message); // Exibe erros de conexão
+            }
+        });
+    </script>
 </body>
 </html>
